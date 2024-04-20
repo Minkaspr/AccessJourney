@@ -18,7 +18,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUser(Long id) {
         Optional<User> user = userRepository.findById(id);
-        return user.get();
+        if (user.isPresent()) {
+            return user.get();
+        } else {
+            throw new RuntimeException("Usuario no encontrado con id: " + id);
+        }
     }
 
     @Override
@@ -34,8 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User editUser(Long id, User updatedUser) {
         // Encuentra el usuario existente
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        User existingUser = getUser(id);
 
         // Actualiza los campos del usuario existente
         existingUser.setEmail(updatedUser.getEmail());

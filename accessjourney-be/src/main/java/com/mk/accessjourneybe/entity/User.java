@@ -7,9 +7,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 
 @Entity
@@ -18,7 +23,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -61,4 +66,39 @@ public class User {
             referencedColumnName = "roleId"
     )
     private Role role;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Devuelve las autoridades (roles) del usuario
+        return List.of(new SimpleGrantedAuthority(role.getName()));
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        // Devuelve true si la cuenta no ha expirado
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        // Devuelve true si la cuenta no está bloqueada
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        // Devuelve true si las credenciales no han expirado
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        // Devuelve true si el usuario está habilitado
+        return true;
+    }
 }

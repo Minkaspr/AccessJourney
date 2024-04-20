@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -17,8 +16,9 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role getRole(Long id) {
-        Optional<Role> role = roleRepository.findById(id);
-        return role.get();
+        Role role = roleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado con id: " + id));
+        return role;
     }
 
     @Override
@@ -34,8 +34,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role editRole(Long id, Role updateRole) {
         // Encuentra el rol existente
-        Role existingRole = roleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Role not found with id: " + id));
+        Role existingRole = getRole(id);
 
         // Actualiza los campos del rol existente
         existingRole.setName(updateRole.getName());
